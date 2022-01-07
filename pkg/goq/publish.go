@@ -9,13 +9,13 @@ func (q *Queue[K, V]) Publish(topic Topic, msg Message[K, V]) (err error) {
 	for _, subGroup := range subscribers {
 		go func(subGroup *subscriberGroup[K, V]) {
 			select {
-			case <- subGroup.unsubscribe:
+			case <- subGroup.stop:
 				return
 			default:
 			}
 
 			select {
-			case <- subGroup.unsubscribe:
+			case <- subGroup.stop:
 				return
 			case subGroup.channel <- msg:
 			}

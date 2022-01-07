@@ -30,17 +30,12 @@ func logErr(err error) {
 }
 
 func main() {
-	q := goq.New[int, string]()
-
 	var topic goq.Topic = "topic-words"
+	q := goq.New[int, string]()
+	q.CreateTopic(topic)
 
-	err := q.CreateTopic(topic)
-	logErr(err)
-
-	subA, err := q.Subscribe(topic, "A")
-	logErr(err)
-	subB, err := q.Subscribe(topic, "B")
-	logErr(err)
+	subA, _ := q.Subscribe(topic, "A")
+	subB, _ := q.Subscribe(topic, "B")
 
 	fmt.Println(q.Topics())
 	fmt.Println(q.Subscribers(topic))
@@ -53,6 +48,15 @@ func main() {
 
 	q.Publish(topic, goq.Message[int, string]{1, "hello!"})
 	q.Publish(topic, goq.Message[int, string]{3, "abc!"})
+
+	time.Sleep(time.Second *1)
+
+	fmt.Printf("A: %+v\n", cbA.arr)
+	fmt.Printf("B: %+v\n", cbB.arr)
+
+	q.Unsubscribe(subA)
+
+	q.Publish(topic, goq.Message[int, string]{4, "who's listening?"})
 
 	time.Sleep(time.Second *1)
 
