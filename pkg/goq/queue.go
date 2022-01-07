@@ -50,8 +50,10 @@ func (q *Queue[K, V]) listenSubscribe() {
 			q.subs[group] = subGroup
 		case subGroup := <-q.subDel:
 			subGroup.stop <- struct{}{}
+
 			close(subGroup.stop)
 			close(subGroup.channel)
+
 			delete(q.subs, subGroup.group)
 			q.deleteGroup(subGroup)
 		default:
