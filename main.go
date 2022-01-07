@@ -4,12 +4,22 @@ import (
 	"os"
 	"fmt"
 	"time"
+	"sync"
 	"github.com/piotrpersona/goq/pkg/goq"
 )
 
-func consume[K, V any](channel <-chan goq.Message[K, V], topic goq.Topic, group goq.Group) {
+type consumer[K, V any] struct {
+	mu sync.Mutex
+
+	arr []goq.Message[K, V]
+}
+
+func (c *consumer[K, V]) consume(channel <-chan goq.Message[K, V], topic goq.Topic, group goq.Group) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	for msg := range channel {
-		fmt.Printf("[%s] Received message from %s, key: %v value: %v\n", group, topic, msg.Key, msg.Value)
+		c.arr = append(c.arr, msg)
 	}
 }
 
@@ -31,18 +41,23 @@ func main() {
 	var groupA goq.Group = "A"
 	channelA, err := q.Subscribe(topic, groupA)
 	logErr(err)
+	consumerA := consumer[int, string]{arr: make([]goq.Message[int, string], 0)}
 
 	var groupB goq.Group = "B"
 	channelB, err := q.Subscribe(topic, groupB)
 	logErr(err)
+	consumerB := consumer[int, string]{arr: make([]goq.Message[int, string], 0)}
 
 	fmt.Println(q.Topics())
 	fmt.Println(q.Subscribers(topic))
 
-	go consume(channelA, topic, groupA)
-	go consume(channelB, topic, groupB)
+	go consumerA.consume(channelA, topic, groupA)
+	go consumerB.consume(channelB, topic, groupB)
 
 	q.Publish(topic, goq.Message[int, string]{1, "hello!"})
 
-	time.Sleep(time.Second *3)
+	time.Sleep(time.Second *1)
+
+	fmt.Printf("A: %+v\n", consumerA.arr)
+	fmt.Printf("B: %+v\n", consumerB.arr)
 }

@@ -29,6 +29,11 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group) (channel <-chan Messag
 		return
 	}
 
+	if _, exists := q.subs[group]; exists {
+		err = fmt.Errorf("cannot subscribe to a topic, err: group %s already exists", group)
+		return
+	}
+
 	subscriberGroup := &subscriberGroup[K, V]{
 		name: group,
 		topic: topic,
