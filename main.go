@@ -40,7 +40,7 @@ func main() {
 	q.Subscribe(topic, "B", cbB)
 
 	fmt.Println(q.Topics())
-	fmt.Println(q.Subscribers(topic))
+	fmt.Println(q.Groups(topic))
 
 	q.Publish(topic, goq.Message[int, string]{1, "hello!"})
 	q.Publish(topic, goq.Message[int, string]{3, "abc!"})
