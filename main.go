@@ -6,6 +6,13 @@ import (
 	"github.com/piotrpersona/goq/pkg/goq"
 )
 
+func consume[K, V any](channel <-chan goq.Message[K, V], topic goq.Topic, group goq.Group) {
+	select {
+	case msg := <- channel:
+		fmt.Printf("[%s] Received message from %s, key: %v value: %v\n", group, topic, msg.Key, msg.Value)
+	}
+}
+
 func main() {
 	q := goq.New[int, string]()
 
@@ -13,17 +20,17 @@ func main() {
 
 	_ = q.CreateTopic(topic)
 
-	channel, _ := q.Subscribe(topic, "example-subscriber")
+	var groupA goq.Group = "A"
+	channelA, _ := q.Subscribe(topic, groupA)
+	var groupB goq.Group = "B"
+	channelB, _ := q.Subscribe(topic, groupB)
 
 	fmt.Println(q.Topics())
 	fmt.Println(q.Subscribers(topic))
 
-	go func() {
-		select {
-		case msg := <- channel:
-			fmt.Printf("Received message from %s, key: %v value: %v\n", topic, msg.Key, msg.Value)
-		}
-	}()
+	go consume(channelA, topic, groupA)
+	go consume(channelB, topic, groupB)
+
 	q.Publish(topic, goq.Message[int, string]{1, "hello!"})
 
 	time.Sleep(time.Second *3)
