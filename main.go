@@ -1,15 +1,22 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"time"
 	"github.com/piotrpersona/goq/pkg/goq"
 )
 
 func consume[K, V any](channel <-chan goq.Message[K, V], topic goq.Topic, group goq.Group) {
-	select {
-	case msg := <- channel:
+	for msg := range channel {
 		fmt.Printf("[%s] Received message from %s, key: %v value: %v\n", group, topic, msg.Key, msg.Value)
+	}
+}
+
+func logErr(err error) {
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }
 
@@ -18,12 +25,16 @@ func main() {
 
 	var topic goq.Topic = "topic-words"
 
-	_ = q.CreateTopic(topic)
+	err := q.CreateTopic(topic)
+	logErr(err)
 
 	var groupA goq.Group = "A"
-	channelA, _ := q.Subscribe(topic, groupA)
+	channelA, err := q.Subscribe(topic, groupA)
+	logErr(err)
+
 	var groupB goq.Group = "B"
-	channelB, _ := q.Subscribe(topic, groupB)
+	channelB, err := q.Subscribe(topic, groupB)
+	logErr(err)
 
 	fmt.Println(q.Topics())
 	fmt.Println(q.Subscribers(topic))

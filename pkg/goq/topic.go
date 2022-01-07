@@ -19,7 +19,7 @@ func (q *Queue[K, V]) CreateTopic(topic Topic) (err error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
-	if err = q.topicExists(topic); err == nil {
+	if existsErr := q.topicExists(topic); existsErr == nil {
 		err = fmt.Errorf("cannot create topic, err: topic %s already exists", topic)
 		return
 	}
