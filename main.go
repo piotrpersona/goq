@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/piotrpersona/goq/pkg/queue"
+	"github.com/piotrpersona/goq/pkg/goq"
 )
 
 func main() {
-	q := queue.New[int, string]()
+	q := goq.New[int, string]()
 
-	var topic queue.Topic = "topic-words"
+	var topic goq.Topic = "topic-words"
 
 	_ = q.CreateTopic(topic)
 
