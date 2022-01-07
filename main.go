@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"fmt"
 	"time"
 	"sync"
@@ -14,6 +13,12 @@ type cb[K, V any] struct {
 	arr []goq.Message[K, V]
 }
 
+func newCb[K, V any]() *cb[K, V] {
+	return &cb[K, V]{
+		arr: make([]goq.Message[K, V], 0),
+	}
+}
+
 func (c *cb[K, V]) Handle(msg goq.Message[K, V]) (err error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -22,23 +27,17 @@ func (c *cb[K, V]) Handle(msg goq.Message[K, V]) (err error) {
 	return
 }
 
-func logErr(err error) {
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
 
 func main() {
 	var topic goq.Topic = "topic-words"
 	q := goq.New[int, string]()
 	q.CreateTopic(topic)
 
-	cbA := cb[int, string]{arr: make([]goq.Message[int, string], 0)}
-	q.Subscribe(topic, "A", &cbA)
+	cbA := newCb[int, string]()
+	q.Subscribe(topic, "A", cbA)
 
-	cbB := cb[int, string]{arr: make([]goq.Message[int, string], 0)}
-	q.Subscribe(topic, "B", &cbB)
+	cbB := newCb[int, string]()
+	q.Subscribe(topic, "B", cbB)
 
 	fmt.Println(q.Topics())
 	fmt.Println(q.Subscribers(topic))
