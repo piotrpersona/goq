@@ -34,17 +34,14 @@ func main() {
 	q := goq.New[int, string]()
 	q.CreateTopic(topic)
 
-	subA, _ := q.Subscribe(topic, "A")
-	subB, _ := q.Subscribe(topic, "B")
+	cbA := cb[int, string]{arr: make([]goq.Message[int, string], 0)}
+	q.Subscribe(topic, "A", &cbA)
+
+	cbB := cb[int, string]{arr: make([]goq.Message[int, string], 0)}
+	q.Subscribe(topic, "B", &cbB)
 
 	fmt.Println(q.Topics())
 	fmt.Println(q.Subscribers(topic))
-
-	cbA := cb[int, string]{arr: make([]goq.Message[int, string], 0)}
-	go subA.Run(&cbA)
-
-	cbB := cb[int, string]{arr: make([]goq.Message[int, string], 0)}
-	go subB.Run(&cbB)
 
 	q.Publish(topic, goq.Message[int, string]{1, "hello!"})
 	q.Publish(topic, goq.Message[int, string]{3, "abc!"})
@@ -54,7 +51,7 @@ func main() {
 	fmt.Printf("A: %+v\n", cbA.arr)
 	fmt.Printf("B: %+v\n", cbB.arr)
 
-	q.Unsubscribe(subA)
+	q.Unsubscribe("A")
 
 	q.Publish(topic, goq.Message[int, string]{4, "who's listening?"})
 

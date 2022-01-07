@@ -48,6 +48,11 @@ func (q *Queue[K, V]) listenSubscribe() {
 
 			q.topics[topic] = append(q.topics[topic], subGroup)
 			q.subs[group] = subGroup
+
+			go func() {
+				subGroup.run()
+			}()
+
 		case subGroup := <-q.subDel:
 			subGroup.stop <- struct{}{}
 

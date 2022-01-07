@@ -12,28 +12,25 @@ type subscriberGroup[K, V any] struct {
 	group Group
 	topic Topic
 	channel chan Message[K, V] // channel to receive messages
+	cb Callback[K, V]
 	stop chan struct{}
 }
 
-type Subscriber[K, V any] struct {
-	subGroup *subscriberGroup[K, V]
-}
-
-func (s *Subscriber[K, V]) Run(cb Callback[K, V]) (err error) {
+func (s *subscriberGroup[K, V]) run() (err error) {
 	for {
 		select {
-		case <- s.subGroup.stop:
+		case <- s.stop:
 			return
 		default:
 		}
 
 		select {
-		case <- s.subGroup.stop:
+		case <- s.stop:
 			return
-		case msg := <- s.subGroup.channel:
-			handleErr := cb.Handle(msg)
+		case msg := <- s.channel:
+			handleErr := s.cb.Handle(msg)
 			if handleErr != nil {
-				err = fmt.Errorf("subscriber %s error while handling message from %s, err: %w", s.subGroup.group, s.subGroup.topic, handleErr)
+				err = fmt.Errorf("subscriber %s error while handling message from %s, err: %w", s.group, s.topic, handleErr)
 				return
 			}
 		}
@@ -41,7 +38,7 @@ func (s *Subscriber[K, V]) Run(cb Callback[K, V]) (err error) {
 	return
 }
 
-func (q *Queue[K, V]) Subscribe(topic Topic, group Group) (subscriber Subscriber[K, V], err error) {
+func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (err error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
@@ -59,29 +56,27 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group) (subscriber Subscriber
 		group: group,
 		topic: topic,
 		channel: make(chan Message[K, V], channelMaxSize),
+		cb: cb,
 		stop: make(chan struct{}),
 	}
 
 	q.subAdd <- subGroup
 
-	subscriber = Subscriber[K, V]{
-		subGroup: subGroup,
-	}
 	return
 }
 
 
-func (q *Queue[K, V]) Unsubscribe(sub Subscriber[K, V]) (err error) {
+func (q *Queue[K, V]) Unsubscribe(group Group) (err error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
-	_, groupExists := q.subs[sub.subGroup.group]
+	subGroup, groupExists := q.subs[group]
 	if !groupExists {
 		err = fmt.Errorf("cannot unsubscribe, err: group %s does not exist")
 		return
 	}
 
-	q.subDel <- sub.subGroup
+	q.subDel <- subGroup
 
 	return
 }
