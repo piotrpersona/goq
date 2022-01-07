@@ -48,7 +48,7 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group) (channel <-chan Messag
 }
 
 
-func (q *Queue[K, V]) Ubsubscribe(group Group) (err error) {
+func (q *Queue[K, V]) Unsubscribe(group Group) (err error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
@@ -57,6 +57,8 @@ func (q *Queue[K, V]) Ubsubscribe(group Group) (err error) {
 		err = fmt.Errorf("cannot unsubscribe, err: group %s does not exist")
 		return
 	}
+
+	subGroup.unsubscribe <- struct{}{}
 
 	delete(q.subs, group)
 	q.deleteGroup(subGroup)

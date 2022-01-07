@@ -20,6 +20,7 @@ type subscriberGroup[K, V any] struct {
 	name Group
 	topic Topic
 	channel chan Message[K, V]
+	unsubscribe chan struct{}
 }
 
 type Queue[K, V any] struct {
