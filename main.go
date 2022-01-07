@@ -31,18 +31,18 @@ func (c *cb[K, V]) Handle(msg goq.Message[K, V]) (err error) {
 
 func main() {
 	var topic goq.Topic = "topic-words"
-	fmt.Printf("#go: %d\n", runtime.NumGoroutine()) // main goroutine
+	fmt.Printf("Start main goroutine #go: %d\n", runtime.NumGoroutine())
 	
 	q := goq.New[int, string]()
 	q.CreateTopic(topic)
-	fmt.Printf("#go: %d\n", runtime.NumGoroutine()) // goq.New goroutine
+	fmt.Printf("goq.New will spawn another goroutine #go: %d\n", runtime.NumGoroutine())
 
 	cbA := newCb[int, string]()
 	q.Subscribe(topic, "A", cbA)
 
 	cbB := newCb[int, string]()
 	q.Subscribe(topic, "B", cbB)
-	fmt.Printf("#go: %d\n", runtime.NumGoroutine()) // 2 subscribers
+	fmt.Printf("2 subscribers were spawned #go: %d\n", runtime.NumGoroutine())
 
 	fmt.Println(q.Topics())
 	fmt.Println(q.Groups(topic))
@@ -61,7 +61,7 @@ func main() {
 
 	time.Sleep(time.Second)
 
-	fmt.Printf("#go: %d\n", runtime.NumGoroutine()) // group A unsibscribed
+	fmt.Printf("Group A unsubscribed #go: %d\n", runtime.NumGoroutine())
 
 	fmt.Printf("A: %+v\n", cbA.arr)
 	fmt.Printf("B: %+v\n", cbB.arr)
@@ -69,5 +69,5 @@ func main() {
 	q.Stop()
 
 	time.Sleep(time.Second)
-	fmt.Printf("#go: %d\n", runtime.NumGoroutine()) // cleanup
+	fmt.Printf("Close queue #go: %d\n", runtime.NumGoroutine())
 }
