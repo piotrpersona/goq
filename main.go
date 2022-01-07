@@ -55,6 +55,7 @@ func main() {
 	go consumerB.consume(channelB, topic, groupB)
 
 	q.Publish(topic, goq.Message[int, string]{1, "hello!"})
+	q.Publish(topic, goq.Message[int, string]{3, "abc!"})
 
 	time.Sleep(time.Second *1)
 

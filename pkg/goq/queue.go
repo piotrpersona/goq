@@ -37,9 +37,19 @@ func New[K, V any]() *Queue[K, V] {
 		subs: make(map[Group]*subscriberGroup[K, V]),
 	}
 
+	go queue.listenUnsubscribe()
+
 	return queue
 }
 
-func (q *Queue[K, V]) listenSubscriptions() {
-	
+func (q *Queue[K, V]) listenUnsubscribe() {
+	for _, subGroup := range q.subs {
+		go func(subGroup *subscriberGroup[K, V]) {
+			select {
+			case <-subGroup.unsubscribe:
+				close(subGroup.channel)
+				return
+			}
+		}(subGroup)
+	}
 }
