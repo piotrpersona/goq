@@ -1,4 +1,4 @@
-package queue
+package goq
 
 import (
 	"sync"
@@ -36,8 +36,22 @@ func New[K, V any]() *Queue[K, V] {
 	}
 }
 
+func (q *Queue[K, V]) Topics() (topics []Topic) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	for topic, _ := range q.topics {
+		topics = append(topics, topic)
+	}
+
+	return
+}
+
 func (q *Queue[K, V]) CreateTopic(topic Topic) (err error) {
-	if q.topicExists(topic) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	if err = q.topicExists(topic); err == nil {
 		err = fmt.Errorf("cannot create topic, err: topic %s already exists", topic)
 		return
 	}
@@ -46,12 +60,32 @@ func (q *Queue[K, V]) CreateTopic(topic Topic) (err error) {
 	return
 }
 
-func (q Queue[K, V]) topicExists(topic Topic) bool {
+func (q Queue[K, V]) topicExists(topic Topic) (err error) {
 	_, exists := q.topics[topic]
-	return exists
+	if !exists {
+		err = fmt.Errorf("topic %s does not exist", topic)
+		return
+	}
+	return 
 }
 
 func (q *Queue[K, V]) Publish(topic Topic, msg Message[K, V]) (err error) {
+	return
+}
+
+func (q *Queue[K, V]) Subscribers(topic Topic) (subs []Group, err error) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	if err = q.topicExists(topic); err != nil {
+		err = fmt.Errorf("cannot get subscribers list, err: %w", err)
+		return
+	}
+	
+	for _, sub := range q.topics[topic] {
+		subs = append(subs, sub.name)
+	}
+
 	return
 }
 
@@ -59,8 +93,8 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group) (channel <-chan Messag
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
-	if !q.topicExists(topic) {
-		err = fmt.Errorf("cannot subscribe to a topic, err: topic %s does not exist", topic)
+	if err = q.topicExists(topic); err != nil {
+		err = fmt.Errorf("cannot subscribe to a topic, err: %w", err)
 		return
 	}
 

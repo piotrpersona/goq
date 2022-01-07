@@ -7,9 +7,13 @@ import (
 
 func main() {
 	q := queue.New[int, string]()
-	_ = q.CreateTopic("topic-words")
 
-	channel, _ := q.Subscribe("topic-words", "example-subscriber")
+	var topic queue.Topic = "topic-words"
 
-	fmt.Println(len(channel))
+	_ = q.CreateTopic(topic)
+
+	q.Subscribe(topic, "example-subscriber")
+
+	fmt.Println(q.Topics())
+	fmt.Println(q.Subscribers(topic))
 }
