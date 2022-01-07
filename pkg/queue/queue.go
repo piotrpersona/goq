@@ -19,17 +19,20 @@ type Group string
 
 type subscriberGroup[K, V any] struct {
 	name Group
+	topic Topic
 	channel chan Message[K, V]
 }
 
 type Queue[K, V any] struct {
 	mu   sync.RWMutex
-	subs map[Topic][]subscriberGroup[K, V]
+	topics map[Topic][]*subscriberGroup[K, V]
+	subs map[Group]*subscriberGroup[K, V]
 }
 
 func New[K, V any]() *Queue[K, V] {
 	return &Queue[K, V]{
-		subs: make(map[Topic][]subscriberGroup[K, V]),
+		topics: make(map[Topic][]*subscriberGroup[K, V]),
+		subs: make(map[Group]*subscriberGroup[K, V]),
 	}
 }
 
@@ -39,12 +42,12 @@ func (q *Queue[K, V]) CreateTopic(topic Topic) (err error) {
 		return
 	}
 
-	q.subs[topic] = make([]subscriberGroup[K, V], 0)
+	q.topics[topic] = make([]*subscriberGroup[K, V], 0)
 	return
 }
 
 func (q Queue[K, V]) topicExists(topic Topic) bool {
-	_, exists := q.subs[topic]
+	_, exists := q.topics[topic]
 	return exists
 }
 
@@ -61,16 +64,42 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group) (channel <-chan Messag
 		return
 	}
 
-	subscriberGroup := subscriberGroup[K, V]{
+	subscriberGroup := &subscriberGroup[K, V]{
 		name: group,
+		topic: topic,
 		channel: make(chan Message[K, V], channelMaxSize),
 	}
 
-	q.subs[topic] = append(q.subs[topic], subscriberGroup)
+	q.topics[topic] = append(q.topics[topic], subscriberGroup)
+	q.subs[group] = subscriberGroup
+
 	channel = subscriberGroup.channel
 	return
 }
 
 func (q *Queue[K, V]) Ubsubscribe(group Group) (err error) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	subGroup, groupExists := q.subs[group]
+	if !groupExists {
+		err = fmt.Errorf("cannot unsubscribe, err: group %s does not exist")
+		return
+	}
+
+	delete(q.subs, group)
+	q.deleteGroup(subGroup)
+
 	return
+}
+
+func (q *Queue[K, V]) deleteGroup(group *subscriberGroup[K, V]) {
+	var deletePos int
+	for index, value := range q.topics[group.topic] {
+		if value.name == group.name {
+			deletePos = index
+			break
+		}
+	}
+	q.topics[group.topic] = append(q.topics[group.topic][:deletePos], q.topics[group.topic][deletePos+1:]...)
 }
