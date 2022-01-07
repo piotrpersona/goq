@@ -37,7 +37,7 @@ q.Publish("topic", goq.Message[int, string]{1, "Hello world!"})
 
 Stop queue:
 ```go
-q.Stop()
+<-q.Stop() // <-chan struct{}
 ```
 
-> Publish, Subscribe, Unsubscribe and Stop works asynchronously, and they should 
+> Publish, Subscribe, Unsubscribe and Close works asynchronously. Close can be awaited.
