@@ -39,6 +39,7 @@ type Queue[K, V any] struct {
 	subDel chan *subscriberGroup[K, V]
 
 	closeChan chan struct{}
+	doneChan chan struct{}
 }
 
 func New[K, V any]() *Queue[K, V] {
@@ -48,6 +49,7 @@ func New[K, V any]() *Queue[K, V] {
 		subAdd: make(chan *subscriberGroup[K, V]),
 		subDel: make(chan *subscriberGroup[K, V]),
 		closeChan: make(chan struct{}),
+		doneChan: make(chan struct{}),
 	}
 
 	go queue.listenSubscribe()
@@ -180,6 +182,7 @@ func (q *Queue[K, V]) listenSubscribe() {
 			delete(q.subs, subGroup.group)
 			q.deleteGroup(subGroup)
 		case <- q.closeChan:
+			q.doneChan <- struct{}{}
 			return
 		default:
 		}
@@ -215,8 +218,8 @@ func (q *Queue[K, V]) Groups(topic Topic) (subs []Group, err error) {
 }
 
 // Stop will terminate all subscriber processes.
-// It works asynchronously so it should be awaited in some way.
-func (q *Queue[K, V]) Stop() {
+// It works asynchronously and returns channel to await for queue to stop.
+func (q *Queue[K, V]) Stop() <-chan struct{} {
 	var wg sync.WaitGroup
 	wg.Add(len(q.subs))
 
@@ -230,5 +233,5 @@ func (q *Queue[K, V]) Stop() {
 	wg.Wait()
 
 	q.closeChan <- struct{}{}
-	return
+	return q.doneChan
 }

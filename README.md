@@ -34,3 +34,10 @@ Publish to a topic:
 ```go
 q.Publish("topic", goq.Message[int, string]{1, "Hello world!"})
 ```
+
+Stop queue:
+```go
+q.Stop()
+```
+
+> Publish, Subscribe, Unsubscribe and Stop works asynchronously, and they should 

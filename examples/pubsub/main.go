@@ -66,8 +66,7 @@ func main() {
 	fmt.Printf("A: %+v\n", cbA.arr)
 	fmt.Printf("B: %+v\n", cbB.arr)
 
-	q.Stop()
+	<-q.Stop()
 
-	time.Sleep(time.Second)
 	fmt.Printf("Close queue #go: %d\n", runtime.NumGoroutine())
 }
