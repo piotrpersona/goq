@@ -1,7 +1,6 @@
 # goq
 
-Golang interprocess, in-memory message queue based solution.
-It implements publish-subscribe pattern.
+Golang interprocess, in-memory pub-sub message queue.
 
 Checkout `examples/` directory.
 
