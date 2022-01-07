@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"sync"
+	"runtime"
 	"github.com/piotrpersona/goq/pkg/goq"
 )
 
@@ -30,14 +31,18 @@ func (c *cb[K, V]) Handle(msg goq.Message[K, V]) (err error) {
 
 func main() {
 	var topic goq.Topic = "topic-words"
+	fmt.Printf("#go: %d\n", runtime.NumGoroutine()) // main goroutine
+	
 	q := goq.New[int, string]()
 	q.CreateTopic(topic)
+	fmt.Printf("#go: %d\n", runtime.NumGoroutine()) // goq.New goroutine
 
 	cbA := newCb[int, string]()
 	q.Subscribe(topic, "A", cbA)
 
 	cbB := newCb[int, string]()
 	q.Subscribe(topic, "B", cbB)
+	fmt.Printf("#go: %d\n", runtime.NumGoroutine()) // 2 subscribers
 
 	fmt.Println(q.Topics())
 	fmt.Println(q.Groups(topic))
@@ -56,6 +61,13 @@ func main() {
 
 	time.Sleep(time.Second)
 
+	fmt.Printf("#go: %d\n", runtime.NumGoroutine()) // group A unsibscribed
+
 	fmt.Printf("A: %+v\n", cbA.arr)
 	fmt.Printf("B: %+v\n", cbB.arr)
+
+	q.Stop()
+
+	time.Sleep(time.Second)
+	fmt.Printf("#go: %d\n", runtime.NumGoroutine()) // cleanup
 }
