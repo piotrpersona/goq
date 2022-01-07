@@ -45,7 +45,7 @@ func main() {
 	q.Publish(topic, goq.Message[int, string]{1, "hello!"})
 	q.Publish(topic, goq.Message[int, string]{3, "abc!"})
 
-	time.Sleep(time.Second *1)
+	time.Sleep(time.Second)
 
 	fmt.Printf("A: %+v\n", cbA.arr)
 	fmt.Printf("B: %+v\n", cbB.arr)
@@ -54,7 +54,7 @@ func main() {
 
 	q.Publish(topic, goq.Message[int, string]{4, "who's listening?"})
 
-	time.Sleep(time.Second *1)
+	time.Sleep(time.Second)
 
 	fmt.Printf("A: %+v\n", cbA.arr)
 	fmt.Printf("B: %+v\n", cbB.arr)
