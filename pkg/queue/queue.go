@@ -2,6 +2,7 @@ package queue
 
 import (
 	"sync"
+	"fmt"
 )
 
 const (
@@ -32,6 +33,21 @@ func New[K, V any]() *Queue[K, V] {
 	}
 }
 
+func (q *Queue[K, V]) CreateTopic(topic Topic) (err error) {
+	if q.topicExists(topic) {
+		err = fmt.Errorf("cannot create topic, err: topic %s already exists", topic)
+		return
+	}
+
+	q.subs[topic] = make([]subscriberGroup[K, V], 0)
+	return
+}
+
+func (q Queue[K, V]) topicExists(topic Topic) bool {
+	_, exists := q.subs[topic]
+	return exists
+}
+
 func (q *Queue[K, V]) Publish(topic Topic, msg Message[K, V]) (err error) {
 	return
 }
@@ -39,6 +55,11 @@ func (q *Queue[K, V]) Publish(topic Topic, msg Message[K, V]) (err error) {
 func (q *Queue[K, V]) Subscribe(topic Topic, group Group) (channel <-chan Message[K, V], err error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
+
+	if !q.topicExists(topic) {
+		err = fmt.Errorf("cannot subscribe to a topic, err: topic %s does not exist", topic)
+		return
+	}
 
 	subscriberGroup := subscriberGroup[K, V]{
 		name: group,
