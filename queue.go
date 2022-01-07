@@ -125,7 +125,7 @@ func (q *Queue[K, V]) Unsubscribe(group Group) (err error) {
 
 	subGroup, groupExists := q.subs[group]
 	if !groupExists {
-		err = fmt.Errorf("cannot unsubscribe, err: group %s does not exist")
+		err = fmt.Errorf("cannot unsubscribe, err: group %s does not exist", group)
 		return
 	}
 

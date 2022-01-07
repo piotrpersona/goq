@@ -21,7 +21,7 @@ type requestsCallback struct {}
 
 func (r *requestsCallback) Handle(msg goq.Message[time.Time, http.Request]) (err error) {
 	time.Sleep(time.Second * 2) // Long message processing
-	fmt.Printf("%s %+V\n", msg.Key.UTC().Format(time.RFC3339), msg.Value)
+	fmt.Printf("%s %+v\n", msg.Key.UTC().Format(time.RFC3339), msg.Value)
 	return
 }
 
