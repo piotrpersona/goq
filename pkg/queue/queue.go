@@ -15,6 +15,7 @@ type Message[K, V] interface {
 
 type Queue[M Message] interface {
 	Publish(topic string, M) (err error)
-	Subscribe(topic string) <-chan M
+	Subscribe(topic, group string) (<-chan M, err error)
+	Ubsubscribe(group string) (err error)
 }
 
