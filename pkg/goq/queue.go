@@ -28,7 +28,6 @@ type Queue[K, V any] struct {
 
 	topics map[Topic][]*subscriberGroup[K, V]
 	subs map[Group]*subscriberGroup[K, V]
-
 }
 
 func New[K, V any]() *Queue[K, V] {

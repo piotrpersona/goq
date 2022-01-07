@@ -4,6 +4,25 @@ import (
 	"fmt"
 )
 
+type Callback[K, V any] interface {
+	Handle(msg Message[K, V]) (err error)
+}
+
+type Subscriber[K, V any] struct {
+	subGroup *subscriberGroup[K, V]
+}
+
+func (s *Subscriber[K, V]) Run(cb Callback[K, V]) (err error) {
+	for msg := range s.subGroup.channel {
+		handleErr := cb.Handle(msg)
+		if handleErr != nil {
+			err = fmt.Errorf("subscriber %s error while handling message from %s, err: %w", s.subGroup.name, s.subGroup.topic, handleErr)
+			return
+		}
+	}
+	return
+}
+
 func (q *Queue[K, V]) Subscribers(topic Topic) (subs []Group, err error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
@@ -20,7 +39,7 @@ func (q *Queue[K, V]) Subscribers(topic Topic) (subs []Group, err error) {
 	return
 }
 
-func (q *Queue[K, V]) Subscribe(topic Topic, group Group) (channel <-chan Message[K, V], err error) {
+func (q *Queue[K, V]) Subscribe(topic Topic, group Group) (subscriber Subscriber[K, V], err error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
@@ -34,16 +53,18 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group) (channel <-chan Messag
 		return
 	}
 
-	subscriberGroup := &subscriberGroup[K, V]{
+	subGroup := &subscriberGroup[K, V]{
 		name: group,
 		topic: topic,
 		channel: make(chan Message[K, V], channelMaxSize),
 	}
 
-	q.topics[topic] = append(q.topics[topic], subscriberGroup)
-	q.subs[group] = subscriberGroup
+	q.topics[topic] = append(q.topics[topic], subGroup)
+	q.subs[group] = subGroup
 
-	channel = subscriberGroup.channel
+	subscriber = Subscriber[K, V]{
+		subGroup: subGroup,
+	}
 	return
 }
 
