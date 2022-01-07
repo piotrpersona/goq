@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/piotrpersona/goq/pkg/goq"
+	"github.com/piotrpersona/goq"
 )
 
 func writeHandler(q *goq.Queue[time.Time, http.Request], topic goq.Topic) http.HandlerFunc {

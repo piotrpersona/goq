@@ -5,7 +5,7 @@ import (
 	"time"
 	"sync"
 	"runtime"
-	"github.com/piotrpersona/goq/pkg/goq"
+	"github.com/piotrpersona/goq"
 )
 
 type cb[K, V any] struct {

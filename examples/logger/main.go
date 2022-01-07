@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
-	"github.com/piotrpersona/goq/pkg/goq"
+	"github.com/piotrpersona/goq"
 )
 
 type Logger struct {
