@@ -40,7 +40,7 @@ type Queue[K, V any] struct {
 	doneChan chan struct{}
 }
 
-func New[K, V any](opts ...Option[K, V]) *Queue[K, V] {
+func New[K, V any](opts ...QueueOption[K, V]) *Queue[K, V] {
 	queue := &Queue[K, V]{
 		topics: make(map[Topic][]*subscriberGroup[K, V]),
 		subs: make(map[Group]*subscriberGroup[K, V]),
@@ -52,7 +52,7 @@ func New[K, V any](opts ...Option[K, V]) *Queue[K, V] {
 	}
 
 	for _, option := range opts {
-		option.Apply(queue)
+		option.apply(queue)
 	}
 
 	go queue.listenSubscribe()
@@ -64,6 +64,7 @@ type subscriberGroup[K, V any] struct {
 	group Group
 	topic Topic
 	channel chan Message[K, V] // channel to receive messages
+	maxRetries int
 	cb Callback[K, V]
 	stop chan struct{}
 }
@@ -81,19 +82,39 @@ func (s *subscriberGroup[K, V]) run() (err error) {
 			fmt.Println("stop " + s.group)
 			return
 		case msg := <- s.channel:
-			handleErr := s.cb.Handle(msg)
-			if handleErr != nil {
-				err = fmt.Errorf("subscriber %s error while handling message from %s, err: %w", s.group, s.topic, handleErr)
-				return
-			}
+			s.handle(msg)
 		}
+	}
+	return
+}
+
+func (s *subscriberGroup[K, V]) handle(msg Message[K, V]) (err error) {
+	handleErr := s.cb.Handle(msg)
+	if handleErr == nil {
+		return
+	}
+
+	retryNumber := 1
+
+	for retryNumber <= s.maxRetries {
+		handleErr = s.cb.Handle(msg)
+		if handleErr == nil {
+			return
+		}
+
+		retryNumber++
+	}
+
+	if handleErr != nil {
+		err = fmt.Errorf("subscriber %s error while handling message from %s, err: %w", s.group, s.topic, handleErr)
+		return
 	}
 	return
 }
 
 // Subscribe will spawn new subscriber goroutine and run cb Callback[K, V].
 // It works asynchronously.
-func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (err error) {
+func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V], opts ...SubscribeOption[K, V]) (err error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
@@ -113,6 +134,11 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (er
 		channel: make(chan Message[K, V], q.topicMaxSize),
 		cb: cb,
 		stop: make(chan struct{}),
+		maxRetries: DefaultCallbackHandleMaxRetries,
+	}
+
+	for _, option := range opts {
+		option.apply(subGroup)
 	}
 
 	q.subAdd <- subGroup

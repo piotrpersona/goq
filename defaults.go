@@ -1,5 +1,6 @@
 package goq
 
 const (
-	DefaultTopicMaxSize = 32
+	DefaultTopicMaxSize             = 32
+	DefaultCallbackHandleMaxRetries = 0
 )
