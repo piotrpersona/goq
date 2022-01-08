@@ -19,10 +19,9 @@ func writeHandler(q *goq.Queue[time.Time, http.Request], topic goq.Topic) http.H
 
 type requestsCallback struct {}
 
-func (r *requestsCallback) Handle(msg goq.Message[time.Time, http.Request]) (err error) {
+func (r *requestsCallback) Handle(msg goq.Message[time.Time, http.Request]) {
 	time.Sleep(time.Second * 2) // Long message processing
 	fmt.Printf("%s %+v\n", msg.Key.UTC().Format(time.RFC3339), msg.Value)
-	return
 }
 
 func main() {

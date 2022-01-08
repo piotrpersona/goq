@@ -19,8 +19,9 @@ type Message[K, V any] struct {
 }
 
 // Callback to be run when new message is consumed from a topic.
+// All errors should be handled inside the Callback Handle method.
 type Callback[K, V any] interface {
-	Handle(msg Message[K, V]) (err error)
+	Handle(msg Message[K, V])
 }
 
 // Queue represents message queue that can spawn new subscibers, accepts messages from publishers,
@@ -81,39 +82,16 @@ func (s *subscriberGroup[K, V]) run() (err error) {
 		case <- s.stop:
 			return
 		case msg := <- s.channel:
-			s.handle(msg)
+			s.cb.Handle(msg)
 		}
 	}
 	return
 }
 
-func (s *subscriberGroup[K, V]) handle(msg Message[K, V]) (err error) {
-	handleErr := s.cb.Handle(msg)
-	if handleErr == nil {
-		return
-	}
-
-	retryNumber := 1
-
-	for retryNumber <= s.maxRetries {
-		handleErr = s.cb.Handle(msg)
-		if handleErr == nil {
-			return
-		}
-
-		retryNumber++
-	}
-
-	if handleErr != nil {
-		err = fmt.Errorf("subscriber %s error while handling message from %s, err: %w", s.group, s.topic, handleErr)
-		return
-	}
-	return
-}
 
 // Subscribe will spawn new subscriber goroutine and run cb Callback[K, V].
 // It works asynchronously.
-func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V], opts ...subscribeOption[K, V]) (err error) {
+func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (err error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
@@ -133,11 +111,6 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V], opt
 		channel: make(chan Message[K, V], q.topicMaxSize),
 		cb: cb,
 		stop: make(chan struct{}),
-		maxRetries: DefaultCallbackHandleMaxRetries,
-	}
-
-	for _, option := range opts {
-		option.apply(subGroup)
 	}
 
 	q.subAdd <- subGroup

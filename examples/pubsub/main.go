@@ -20,12 +20,11 @@ func newCb[K, V any]() *cb[K, V] {
 	}
 }
 
-func (c *cb[K, V]) Handle(msg goq.Message[K, V]) (err error) {
+func (c *cb[K, V]) Handle(msg goq.Message[K, V]){
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	c.arr = append(c.arr, msg)
-	return
 }
 
 

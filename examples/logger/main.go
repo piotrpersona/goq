@@ -30,9 +30,8 @@ func (l *Logger) Info(message string) {
 	l.q.Publish(l.topic, msg)
 }
 
-func (l *Logger) Handle(msg goq.Message[time.Time, string]) (err error) {
+func (l *Logger) Handle(msg goq.Message[time.Time, string]) {
 	fmt.Printf("%s %s\n", msg.Key.UTC().Format(time.RFC3339), msg.Value)
-	return
 }
 
 func main() {

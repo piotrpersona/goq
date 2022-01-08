@@ -32,9 +32,8 @@ Create callback:
 ```go
 type callback struct {}
 
-func (c callback) Handle(msg goq.Message[int, string]) (err error) {
+func (c callback) Handle(msg goq.Message[int, string]) {
     fmt.Printf("key: %d value: %s", msg.Key, msg.Value)
-    return
 }
 ```
 

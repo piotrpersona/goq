@@ -17,20 +17,3 @@ func WithTopicMaxSize[K, V any](size int) queueOption[K, V] {
 func (w withTopicMaxSize[K, V]) apply(q *Queue[K, V]) {
 	q.topicMaxSize = w.size
 }
-
-type subscribeOption[K, V any] interface {
-	apply(s *subscriberGroup[K, V])
-}
-
-type withRetry[K, V any] struct{
-	retries int
-}
-
-// WithRetry sets number of retries for Callback.
-func WithRetry[K, V any](retries int) subscribeOption[K, V] {
-	return withRetry[K, V]{retries: retries}
-}
-
-func (o withRetry[K, V]) apply(s *subscriberGroup[K, V]) {
-	s.maxRetries = o.retries
-}
