@@ -1,3 +1,12 @@
+## [0.5.4](https://github.com/piotrpersona/goq/compare/v0.5.3...v0.5.4) (2022-01-08)
+
+
+### Bug Fixes
+
+* Fix examples/pubsub race ([c4e1b1a](https://github.com/piotrpersona/goq/commit/c4e1b1a87d1d4aaf8c5493d8c01498982399c6e8))
+
+
+
 ## [0.5.3](https://github.com/piotrpersona/goq/compare/v0.5.2...v0.5.3) (2022-01-08)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * Make options private ([57471b2](https://github.com/piotrpersona/goq/commit/57471b2dc61776d5296820ff5e8598f93ff44c21))
-
-
-
-## [0.4.1](https://github.com/piotrpersona/goq/compare/v0.4.0...v0.4.1) (2022-01-08)
-
-
-### Bug Fixes
-
-* Handle returning error ([116c955](https://github.com/piotrpersona/goq/commit/116c955ef81dd5d4166ef90317dda93b895e0db8))
 
 
 
