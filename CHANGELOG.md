@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/piotrpersona/goq/compare/v0.2.0...v0.3.0) (2022-01-08)
+
+
+### Features
+
+* Add go docs badge ([8175ea8](https://github.com/piotrpersona/goq/commit/8175ea84f4a848f3241227ca26b7e660154c40b4))
+
+
+
 # [0.2.0](https://github.com/piotrpersona/goq/compare/v0.1.2...v0.2.0) (2022-01-08)
 
 
