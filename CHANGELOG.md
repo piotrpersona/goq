@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/piotrpersona/goq/compare/v0.3.1...v0.4.0) (2022-01-08)
+
+
+### Features
+
+* Add subscribe retries ([1399632](https://github.com/piotrpersona/goq/commit/1399632e5ce618b4a10f2a31c4ef933433f52bda))
+
+
+
 ## [0.3.1](https://github.com/piotrpersona/goq/compare/v0.3.0...v0.3.1) (2022-01-08)
 
 
@@ -39,15 +48,6 @@
 
 * Change install requirements ([7230b7c](https://github.com/piotrpersona/goq/commit/7230b7cbacefd87603d6487ca6a47c710dd5d15b))
 * Improve examples with README.md ([bb7350a](https://github.com/piotrpersona/goq/commit/bb7350a4bb15dcb1cc744a142a2a557a56468f0d))
-
-
-
-## [0.1.1](https://github.com/piotrpersona/goq/compare/v0.1.0...v0.1.1) (2022-01-08)
-
-
-### Bug Fixes
-
-* Remove redundant tags ([df23969](https://github.com/piotrpersona/goq/commit/df239691c0dd8ba049ce885d20817175954c3a79))
 
 
 
