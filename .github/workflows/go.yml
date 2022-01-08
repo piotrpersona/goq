@@ -18,11 +18,8 @@ jobs:
       with:
         go-version: 1.17
 
-    - name: Build
-      run: go build -v ./...
-
     - name: Test
-      run: go test -v ./...
+      run: ./test.sh
       
     - name: Conventional Changelog Action
       uses: TriPSs/conventional-changelog-action@v3
