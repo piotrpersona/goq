@@ -2,9 +2,17 @@
 
 Golang interprocess, in-memory pub-sub message queue.
 
-Checkout `examples/` directory.
+## Install
+
+```bash
+go get -u github.com/piotrpersona/goq
+```
 
 > It requires go1.18 or later
+
+## Examples
+
+Checkout `examples/` directory.
 
 ## Usage
 
@@ -38,5 +46,7 @@ Stop queue:
 ```go
 <-q.Stop() // <-chan struct{}
 ```
+---
+**NOTE**
 
-> Publish, Subscribe, Unsubscribe and Close works asynchronously. Close can be awaited.
+Publish, Subscribe, Unsubscribe and Close works asynchronously. Close can be awaited.
