@@ -55,4 +55,5 @@ Stop queue:
 ---
 **NOTE**
 
-Publish, Subscribe, Unsubscribe and Close works asynchronously. Close can be awaited.
+Publish, Subscribe, Unsubscribe and Stop works asynchronously.
+Stop can be awaited.
