@@ -31,5 +31,7 @@ func main() {
 	q.Subscribe("requests", "requests-processor", &requestsCallback{})
 
 	http.HandleFunc("/", writeHandler(q, "requests"))
+
+	fmt.Println("Server listening at :8080")
 	http.ListenAndServe(":8080", nil)
 }

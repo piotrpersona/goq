@@ -13,6 +13,10 @@ go get -u github.com/piotrpersona/goq
 ## Examples
 
 Checkout `examples/` directory.
+Run
+```console
+go run examples/pubsub/main.go
+```
 
 ## Usage
 
