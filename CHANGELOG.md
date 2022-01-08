@@ -1,3 +1,12 @@
+# [0.6.0](https://github.com/piotrpersona/goq/compare/v0.5.4...v0.6.0) (2022-01-08)
+
+
+### Features
+
+* Await for subscribe ([310d92a](https://github.com/piotrpersona/goq/commit/310d92adff936268eb43ad20e1103a630e3eb2c2))
+
+
+
 ## [0.5.4](https://github.com/piotrpersona/goq/compare/v0.5.3...v0.5.4) (2022-01-08)
 
 
@@ -32,15 +41,6 @@
 
 * Do not print consumer stop ([fb59bd3](https://github.com/piotrpersona/goq/commit/fb59bd37bf40acb2d0b1aa97cd58b62aa8a22a85))
 * Do not stop consumer on error ([15a712f](https://github.com/piotrpersona/goq/commit/15a712fbd70b3d14b8baf1ba754e30eeb705c4d2))
-
-
-
-# [0.5.0](https://github.com/piotrpersona/goq/compare/v0.4.1...v0.5.0) (2022-01-08)
-
-
-### Features
-
-* Make options private ([57471b2](https://github.com/piotrpersona/goq/commit/57471b2dc61776d5296820ff5e8598f93ff44c21))
 
 
 
