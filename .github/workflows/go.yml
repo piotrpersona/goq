@@ -31,6 +31,8 @@ jobs:
         types: true
         factories: true
         methods: true
+        recursive: true
+        debug: true
         GITHUB_TOKEN: '${{ secrets.GOQ_CI_GITHUB_TOKEN }}'
       
     - name: Conventional Changelog Action
