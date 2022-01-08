@@ -27,6 +27,9 @@ func (c *cb[K, V]) Handle(msg goq.Message[K, V]){
 	c.arr = append(c.arr, msg)
 }
 
+func (c *cb[K, V]) read() []goq.Message[K, V] {
+	return c.arr
+}
 
 func main() {
 	var topic goq.Topic = "topic-words"
@@ -51,8 +54,8 @@ func main() {
 
 	time.Sleep(time.Second)
 
-	fmt.Printf("A: %+v\n", cbA.arr)
-	fmt.Printf("B: %+v\n", cbB.arr)
+	fmt.Printf("A: %+v\n", cbA.read())
+	fmt.Printf("B: %+v\n", cbB.read())
 
 	q.Unsubscribe("A")
 
@@ -62,8 +65,8 @@ func main() {
 
 	fmt.Printf("Group A unsubscribed #go: %d\n", runtime.NumGoroutine())
 
-	fmt.Printf("A: %+v\n", cbA.arr)
-	fmt.Printf("B: %+v\n", cbB.arr)
+	fmt.Printf("A: %+v\n", cbA.read())
+	fmt.Printf("B: %+v\n", cbB.read())
 
 	<-q.Stop()
 

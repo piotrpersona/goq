@@ -65,7 +65,6 @@ type subscriberGroup[K, V any] struct {
 	group Group
 	topic Topic
 	channel chan Message[K, V] // channel to receive messages
-	maxRetries int
 	cb Callback[K, V]
 	stop chan struct{}
 }
@@ -93,7 +92,7 @@ func (s *subscriberGroup[K, V]) run() (err error) {
 // It works asynchronously.
 func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (err error) {
 	q.mu.Lock()
-	defer q.mu.Unlock()
+	
 
 	if err = q.topicExists(topic); err != nil {
 		err = fmt.Errorf("cannot subscribe to a topic, err: %w", err)
@@ -104,6 +103,8 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (er
 		err = fmt.Errorf("cannot subscribe to a topic, err: group %s already exists", group)
 		return
 	}
+
+	q.mu.Unlock()
 
 	subGroup := &subscriberGroup[K, V]{
 		group: group,
@@ -176,7 +177,6 @@ func (q *Queue[K, V]) listenSubscribe() {
 			close(subGroup.stop)
 			close(subGroup.channel)
 
-			delete(q.subs, subGroup.group)
 			q.deleteGroup(subGroup)
 		case <- q.closeChan:
 			q.doneChan <- struct{}{}
@@ -197,6 +197,9 @@ func (q *Queue[K, V]) subscribe(subGroup *subscriberGroup[K, V]) {
 }
 
 func (q *Queue[K, V]) deleteGroup(subGroup *subscriberGroup[K, V]) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
 	var deletePos int
 	for index, value := range q.topics[subGroup.topic] {
 		if value.group == subGroup.group {
@@ -205,6 +208,7 @@ func (q *Queue[K, V]) deleteGroup(subGroup *subscriberGroup[K, V]) {
 		}
 	}
 	q.topics[subGroup.topic] = append(q.topics[subGroup.topic][:deletePos], q.topics[subGroup.topic][deletePos+1:]...)
+	delete(q.subs, subGroup.group)
 }
 
 // Groups will return list of groups for a topic.
