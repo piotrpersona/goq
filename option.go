@@ -1,7 +1,7 @@
 package goq
 
 
-type QueueOption[K, V any] interface {
+type queueOption[K, V any] interface {
 	apply(q *Queue[K, V])
 }
 
@@ -9,7 +9,8 @@ type withTopicMaxSize[K, V any] struct{
 	size int
 }
 
-func WithTopicMaxSize[K, V any](size int) QueueOption[K, V] {
+// WithRetry sets the limit of messages that can be stored in a topic.
+func WithTopicMaxSize[K, V any](size int) queueOption[K, V] {
 	return withTopicMaxSize[K, V]{size: size}
 }
 
@@ -17,7 +18,7 @@ func (w withTopicMaxSize[K, V]) apply(q *Queue[K, V]) {
 	q.topicMaxSize = w.size
 }
 
-type SubscribeOption[K, V any] interface {
+type subscribeOption[K, V any] interface {
 	apply(s *subscriberGroup[K, V])
 }
 
@@ -25,7 +26,8 @@ type withRetry[K, V any] struct{
 	retries int
 }
 
-func WithRetry[K, V any](retries int) SubscribeOption[K, V] {
+// WithRetry sets number of retries for Callback.
+func WithRetry[K, V any](retries int) subscribeOption[K, V] {
 	return withRetry[K, V]{retries: retries}
 }
 

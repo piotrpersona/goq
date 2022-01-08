@@ -40,7 +40,7 @@ type Queue[K, V any] struct {
 	doneChan chan struct{}
 }
 
-func New[K, V any](opts ...QueueOption[K, V]) *Queue[K, V] {
+func New[K, V any](opts ...queueOption[K, V]) *Queue[K, V] {
 	queue := &Queue[K, V]{
 		topics: make(map[Topic][]*subscriberGroup[K, V]),
 		subs: make(map[Group]*subscriberGroup[K, V]),
@@ -117,7 +117,7 @@ func (s *subscriberGroup[K, V]) handle(msg Message[K, V]) (err error) {
 
 // Subscribe will spawn new subscriber goroutine and run cb Callback[K, V].
 // It works asynchronously.
-func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V], opts ...SubscribeOption[K, V]) (err error) {
+func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V], opts ...subscribeOption[K, V]) (err error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
