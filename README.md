@@ -4,11 +4,11 @@ Golang interprocess, in-memory pub-sub message queue.
 
 ## Install
 
+goq requires go1.18 or later.
+
 ```bash
 go get -u github.com/piotrpersona/goq
 ```
-
-> It requires go1.18 or later
 
 ## Examples
 
