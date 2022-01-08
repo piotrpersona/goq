@@ -1,5 +1,7 @@
 # goq
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/piotrpersona/goq.svg)](https://pkg.go.dev/github.com/piotrpersona/goq)
+
 Golang interprocess, in-memory pub-sub message queue.
 
 ## Install
