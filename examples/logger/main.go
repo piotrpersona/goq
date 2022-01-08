@@ -38,7 +38,9 @@ func main() {
 	q := goq.New[time.Time, string]()
 	logger := NewLogger(q)
 
+	time.Sleep(time.Second)
+
 	logger.Info("hello!")
-	
-	time.Sleep(time.Millisecond*1)
+
+	<-q.Stop()
 }

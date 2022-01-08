@@ -122,7 +122,7 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (er
 // It works asynchronously.
 func (q *Queue[K, V]) Unsubscribe(group Group) (err error) {
 	q.mu.Lock()
-	defer q.mu.Unlock()
+	q.mu.Unlock()
 
 	subGroup, groupExists := q.subs[group]
 	if !groupExists {
@@ -138,7 +138,7 @@ func (q *Queue[K, V]) Unsubscribe(group Group) (err error) {
 // Publish will send Message[K, V] to the internal queue topic channel.
 func (q *Queue[K, V]) Publish(topic Topic, msg Message[K, V]) (err error) {
 	q.mu.Lock()
-	q.mu.Unlock()
+	defer q.mu.Unlock()
 
 	subscribers := q.topics[topic]
 
@@ -164,11 +164,7 @@ func (q *Queue[K, V]) listenSubscribe() {
 	for {
 		select {
 		case subGroup := <-q.subAdd:
-			topic := subGroup.topic
-			group := subGroup.group
-
-			q.topics[topic] = append(q.topics[topic], subGroup)
-			q.subs[group] = subGroup
+			q.subscribe(subGroup)
 
 			go func() {
 				subGroup.run()
@@ -188,6 +184,16 @@ func (q *Queue[K, V]) listenSubscribe() {
 		default:
 		}
 	}
+}
+
+func (q *Queue[K, V]) subscribe(subGroup *subscriberGroup[K, V]) {
+	topic := subGroup.topic
+	group := subGroup.group
+
+	q.mu.Lock()
+	q.topics[topic] = append(q.topics[topic], subGroup)
+	q.subs[group] = subGroup
+	q.mu.Unlock()
 }
 
 func (q *Queue[K, V]) deleteGroup(subGroup *subscriberGroup[K, V]) {
@@ -224,12 +230,16 @@ func (q *Queue[K, V]) Stop() <-chan struct{} {
 	var wg sync.WaitGroup
 	wg.Add(len(q.subs))
 
-	for group, _ := range q.subs {
+	q.mu.Lock()
+	subscribers := q.subs
+
+	for group, _ := range subscribers {
 		go func() {
 			defer wg.Done()
 			q.Unsubscribe(group)
 		}()
 	}
+	q.mu.Unlock()
 
 	wg.Wait()
 
