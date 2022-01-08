@@ -1,3 +1,13 @@
+## [0.5.1](https://github.com/piotrpersona/goq/compare/v0.5.0...v0.5.1) (2022-01-08)
+
+
+### Bug Fixes
+
+* Do not print consumer stop ([fb59bd3](https://github.com/piotrpersona/goq/commit/fb59bd37bf40acb2d0b1aa97cd58b62aa8a22a85))
+* Do not stop consumer on error ([15a712f](https://github.com/piotrpersona/goq/commit/15a712fbd70b3d14b8baf1ba754e30eeb705c4d2))
+
+
+
 # [0.5.0](https://github.com/piotrpersona/goq/compare/v0.4.1...v0.5.0) (2022-01-08)
 
 
@@ -31,15 +41,6 @@
 ### Bug Fixes
 
 * Fix README Stop() typo ([bb4a2d6](https://github.com/piotrpersona/goq/commit/bb4a2d6317df2f526ecd50ec013cf76484bbaafd))
-
-
-
-# [0.3.0](https://github.com/piotrpersona/goq/compare/v0.2.0...v0.3.0) (2022-01-08)
-
-
-### Features
-
-* Add go docs badge ([8175ea8](https://github.com/piotrpersona/goq/commit/8175ea84f4a848f3241227ca26b7e660154c40b4))
 
 
 
