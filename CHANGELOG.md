@@ -1,3 +1,13 @@
+## [0.1.2](https://github.com/piotrpersona/goq/compare/v0.1.1...v0.1.2) (2022-01-08)
+
+
+### Bug Fixes
+
+* Change install requirements ([7230b7c](https://github.com/piotrpersona/goq/commit/7230b7cbacefd87603d6487ca6a47c710dd5d15b))
+* Improve examples with README.md ([bb7350a](https://github.com/piotrpersona/goq/commit/bb7350a4bb15dcb1cc744a142a2a557a56468f0d))
+
+
+
 ## [0.1.1](https://github.com/piotrpersona/goq/compare/v0.1.0...v0.1.1) (2022-01-08)
 
 
