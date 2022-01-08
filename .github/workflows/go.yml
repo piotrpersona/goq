@@ -20,21 +20,7 @@ jobs:
 
     - name: Test
       run: ./test.sh
-    
-    - name: Update readme according to Go doc
-      uses: posener/goreadme@v1
-      with:
-        readme-file: DOCS.md
-        constants: true
-        variabless: true
-        functions: true
-        types: true
-        factories: true
-        methods: true
-        recursive: true
-        debug: true
-        GITHUB_TOKEN: '${{ secrets.GOQ_CI_GITHUB_TOKEN }}'
-      
+
     - name: Conventional Changelog Action
       uses: TriPSs/conventional-changelog-action@v3
       with:
