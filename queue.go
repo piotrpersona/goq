@@ -82,7 +82,10 @@ func (s *subscriberGroup[K, V]) run() (err error) {
 			fmt.Println("stop " + s.group)
 			return
 		case msg := <- s.channel:
-			s.handle(msg)
+			err = s.handle(msg)
+			if err != nil {
+				return
+			}
 		}
 	}
 	return
