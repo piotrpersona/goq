@@ -20,6 +20,12 @@ jobs:
 
     - name: Test
       run: ./test.sh
+    
+    - name: Update readme according to Go doc
+      uses: posener/goreadme@v1
+      with:
+        readme-file: DOCS.md
+        GITHUB_TOKEN: '${{ secrets.GOQ_CI_GITHUB_TOKEN }}'
       
     - name: Conventional Changelog Action
       uses: TriPSs/conventional-changelog-action@v3
