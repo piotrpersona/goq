@@ -5,10 +5,6 @@ import (
 	"sync"
 )
 
-const (
-	channelMaxSize = 128
-)
-
 // Topic represents topic name that can be subscribed.
 type Topic string
 
@@ -34,6 +30,8 @@ type Queue[K, V any] struct {
 
 	topics map[Topic][]*subscriberGroup[K, V]
 	subs map[Group]*subscriberGroup[K, V]
+
+	topicMaxSize int
 	
 	subAdd chan *subscriberGroup[K, V]
 	subDel chan *subscriberGroup[K, V]
@@ -42,14 +40,19 @@ type Queue[K, V any] struct {
 	doneChan chan struct{}
 }
 
-func New[K, V any]() *Queue[K, V] {
+func New[K, V any](opts ...Option[K, V]) *Queue[K, V] {
 	queue := &Queue[K, V]{
 		topics: make(map[Topic][]*subscriberGroup[K, V]),
 		subs: make(map[Group]*subscriberGroup[K, V]),
+		topicMaxSize: DefaultTopicMaxSize,
 		subAdd: make(chan *subscriberGroup[K, V]),
 		subDel: make(chan *subscriberGroup[K, V]),
 		closeChan: make(chan struct{}),
 		doneChan: make(chan struct{}),
+	}
+
+	for _, option := range opts {
+		option.Apply(queue)
 	}
 
 	go queue.listenSubscribe()
@@ -107,7 +110,7 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (er
 	subGroup := &subscriberGroup[K, V]{
 		group: group,
 		topic: topic,
-		channel: make(chan Message[K, V], channelMaxSize),
+		channel: make(chan Message[K, V], q.topicMaxSize),
 		cb: cb,
 		stop: make(chan struct{}),
 	}
