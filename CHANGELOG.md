@@ -1,3 +1,12 @@
+## [0.4.1](https://github.com/piotrpersona/goq/compare/v0.4.0...v0.4.1) (2022-01-08)
+
+
+### Bug Fixes
+
+* Handle returning error ([116c955](https://github.com/piotrpersona/goq/commit/116c955ef81dd5d4166ef90317dda93b895e0db8))
+
+
+
 # [0.4.0](https://github.com/piotrpersona/goq/compare/v0.3.1...v0.4.0) (2022-01-08)
 
 
@@ -38,16 +47,6 @@
 ### Features
 
 * Generate DOCS.md ([3481934](https://github.com/piotrpersona/goq/commit/3481934c17335e6ad4a8a04ecb495500a072bad1))
-
-
-
-## [0.1.2](https://github.com/piotrpersona/goq/compare/v0.1.1...v0.1.2) (2022-01-08)
-
-
-### Bug Fixes
-
-* Change install requirements ([7230b7c](https://github.com/piotrpersona/goq/commit/7230b7cbacefd87603d6487ca6a47c710dd5d15b))
-* Improve examples with README.md ([bb7350a](https://github.com/piotrpersona/goq/commit/bb7350a4bb15dcb1cc744a142a2a557a56468f0d))
 
 
 
