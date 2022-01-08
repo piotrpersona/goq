@@ -25,6 +25,12 @@ jobs:
       uses: posener/goreadme@v1
       with:
         readme-file: DOCS.md
+        constants: true
+        variabless: true
+        functions: true
+        types: true
+        factories: true
+        methods: true
         GITHUB_TOKEN: '${{ secrets.GOQ_CI_GITHUB_TOKEN }}'
       
     - name: Conventional Changelog Action
