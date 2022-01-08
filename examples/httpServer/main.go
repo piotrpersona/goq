@@ -27,7 +27,8 @@ func (r *requestsCallback) Handle(msg goq.Message[time.Time, http.Request]) {
 func main() {
 	q := goq.New[time.Time, http.Request]()
 	q.CreateTopic("requests")
-	q.Subscribe("requests", "requests-processor", &requestsCallback{})
+	started, _ := q.Subscribe("requests", "requests-processor", &requestsCallback{})
+	<-started
 
 	http.HandleFunc("/", writeHandler(q, "requests"))
 

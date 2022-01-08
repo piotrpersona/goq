@@ -40,10 +40,13 @@ func main() {
 	fmt.Printf("goq.New will spawn another goroutine #go: %d\n", runtime.NumGoroutine())
 
 	cbA := newCb[int, string]()
-	q.Subscribe(topic, "A", cbA)
+	startedA, _ := q.Subscribe(topic, "A", cbA)
+	<-startedA
 
 	cbB := newCb[int, string]()
-	q.Subscribe(topic, "B", cbB)
+	startedB, _ := q.Subscribe(topic, "B", cbB)
+	<-startedB
+
 	fmt.Printf("2 subscribers were spawned #go: %d\n", runtime.NumGoroutine())
 
 	fmt.Println(q.Topics())

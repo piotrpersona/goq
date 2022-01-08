@@ -39,7 +39,8 @@ func (c callback) Handle(msg goq.Message[int, string]) {
 
 Subscribe to a topic:
 ```go
-q.Subscribe(topic, "example-subscriber", &callback{})
+started, err := q.Subscribe(topic, "example-subscriber", &callback{})
+<-started
 ```
 
 Publish to a topic:
@@ -54,5 +55,5 @@ Stop queue:
 ---
 **NOTE**
 
-Publish, Subscribe, Unsubscribe and Stop works asynchronously.
-Stop can be awaited.
+Publish and Unsubscribe works asynchronously.
+Subscriber and Stop should be awaited.

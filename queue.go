@@ -66,10 +66,13 @@ type subscriberGroup[K, V any] struct {
 	topic Topic
 	channel chan Message[K, V] // channel to receive messages
 	cb Callback[K, V]
+	started chan struct{}
 	stop chan struct{}
 }
 
 func (s *subscriberGroup[K, V]) run() (err error) {
+	s.started <- struct{}{}
+
 	for {
 		select {
 		case <- s.stop:
@@ -89,8 +92,8 @@ func (s *subscriberGroup[K, V]) run() (err error) {
 
 
 // Subscribe will spawn new subscriber goroutine and run cb Callback[K, V].
-// It works asynchronously.
-func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (err error) {
+// It returns signal channel to await for subscriber to start.
+func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (started <-chan struct{}, err error) {
 	q.mu.Lock()
 	
 
@@ -106,15 +109,20 @@ func (q *Queue[K, V]) Subscribe(topic Topic, group Group, cb Callback[K, V]) (er
 
 	q.mu.Unlock()
 
+	startedChan := make(chan struct{})
+
 	subGroup := &subscriberGroup[K, V]{
 		group: group,
 		topic: topic,
 		channel: make(chan Message[K, V], q.topicMaxSize),
 		cb: cb,
+		started: startedChan,
 		stop: make(chan struct{}),
 	}
 
 	q.subAdd <- subGroup
+	
+	started = startedChan
 
 	return
 }

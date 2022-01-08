@@ -20,7 +20,8 @@ func NewLogger(q *goq.Queue[time.Time, string]) (logger *Logger) {
 		q: q,
 	}
 
-	q.Subscribe(topic, "logger", logger)
+	start, _ := q.Subscribe(topic, "logger", logger)
+	<-start
 
 	return
 }
@@ -37,8 +38,6 @@ func (l *Logger) Handle(msg goq.Message[time.Time, string]) {
 func main() {
 	q := goq.New[time.Time, string]()
 	logger := NewLogger(q)
-
-	time.Sleep(time.Second)
 
 	logger.Info("hello!")
 
