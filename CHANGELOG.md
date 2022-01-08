@@ -1,3 +1,12 @@
+## [0.5.2](https://github.com/piotrpersona/goq/compare/v0.5.1...v0.5.2) (2022-01-08)
+
+
+### Bug Fixes
+
+* Do not return error from callback ([781ce80](https://github.com/piotrpersona/goq/commit/781ce805717b1a343a206ab3f7b8e0d0cb001460))
+
+
+
 ## [0.5.1](https://github.com/piotrpersona/goq/compare/v0.5.0...v0.5.1) (2022-01-08)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * Add subscribe retries ([1399632](https://github.com/piotrpersona/goq/commit/1399632e5ce618b4a10f2a31c4ef933433f52bda))
-
-
-
-## [0.3.1](https://github.com/piotrpersona/goq/compare/v0.3.0...v0.3.1) (2022-01-08)
-
-
-### Bug Fixes
-
-* Fix README Stop() typo ([bb4a2d6](https://github.com/piotrpersona/goq/commit/bb4a2d6317df2f526ecd50ec013cf76484bbaafd))
 
 
 
